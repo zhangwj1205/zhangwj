@@ -13,7 +13,6 @@ public class MyTest {
         String num1 = in.nextLine().split("\"")[1];
         String num2 = in.nextLine().split("\"")[1];
         int sum = Integer.parseInt(num1)+Integer.parseInt(num2);
-
         System.out.println("\""+""+sum+"\"");
     }
 }
