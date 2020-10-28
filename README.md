@@ -1,2 +1,1 @@
-#zhangwj
-123
+1.初始化main、test包
