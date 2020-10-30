@@ -17,6 +17,11 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
+/**
+ * @Description: zk实现分布式锁
+ * @author ZhangWJ
+ * @date 2020/10/30 14:44
+ */
 public class DistributedLock implements Lock, Watcher{
     private ZooKeeper zk;
     private final String root = "/locks";//根
@@ -25,7 +30,7 @@ public class DistributedLock implements Lock, Watcher{
     private String myZnode;//当前锁
     private CountDownLatch latch;//计数器
     private final int sessionTimeout = 30000;
-    private final List<Exception> exception = new ArrayList<Exception>();
+    private final List<Exception> exception = new ArrayList<>();
 
     /**
      * 创建分布式锁,使用前请确认config配置的zookeeper服务可用
@@ -42,11 +47,7 @@ public class DistributedLock implements Lock, Watcher{
                 // 创建根节点
                 zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
             }
-        } catch (IOException e) {
-            exception.add(e);
-        } catch (KeeperException e) {
-            exception.add(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | KeeperException | InterruptedException e) {
             exception.add(e);
         }
     }
@@ -67,14 +68,11 @@ public class DistributedLock implements Lock, Watcher{
         try {
             if(this.tryLock()){
                 System.out.println("Thread " + Thread.currentThread().getId() + " " +myZnode + " get lock true");
-                return;
             }
             else{
                 waitForLock(waitNode, sessionTimeout);//等待锁
             }
-        } catch (KeeperException e) {
-            throw new LockException(e);
-        } catch (InterruptedException e) {
+        } catch (KeeperException | InterruptedException e) {
             throw new LockException(e);
         }
     }
@@ -106,9 +104,7 @@ public class DistributedLock implements Lock, Watcher{
             //如果不是最小的节点，找到比自己小1的节点
             String subMyZnode = myZnode.substring(myZnode.lastIndexOf("/") + 1);
             waitNode = lockObjNodes.get(Collections.binarySearch(lockObjNodes, subMyZnode) - 1);
-        } catch (KeeperException e) {
-            throw new LockException(e);
-        } catch (InterruptedException e) {
+        } catch (KeeperException | InterruptedException e) {
             throw new LockException(e);
         }
         return false;
@@ -144,9 +140,7 @@ public class DistributedLock implements Lock, Watcher{
             zk.delete(myZnode,-1);
             myZnode = null;
             zk.close();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (KeeperException e) {
+        } catch (InterruptedException | KeeperException e) {
             e.printStackTrace();
         }
     }
@@ -155,11 +149,12 @@ public class DistributedLock implements Lock, Watcher{
         this.lock();
     }
 
+    @Override
     public Condition newCondition() {
-        return null;
+        return newCondition();
     }
 
-    public class LockException extends RuntimeException {
+    public static class LockException extends RuntimeException {
         private static final long serialVersionUID = 1L;
         public LockException(String e){
             super(e);
