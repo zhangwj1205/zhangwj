@@ -1,4 +1,4 @@
-package test.java.com.zhangwj;
+package com.zhangwj;
 
 /**
  * @Description: 单例模式
