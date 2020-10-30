@@ -1,1 +1,1 @@
-1.初始化main、test包
+1.初始化为maven项目
