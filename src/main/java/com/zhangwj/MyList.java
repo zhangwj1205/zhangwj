@@ -16,6 +16,7 @@ public class MyList {
         list.add("Test3");
         list.add("Test4");
         list.add("Test5");
+        //实际上removeIf里面还是用的迭代器去实现list删除的
         list.removeIf(s -> s.equals("Test3"));
         for(String s : list){
             System.out.println(s);
