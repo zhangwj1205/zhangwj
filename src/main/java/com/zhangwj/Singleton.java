@@ -7,7 +7,6 @@ package com.zhangwj;
  */
 public class Singleton {
     private Singleton(){
-
     }
     private static volatile Singleton instance = null;
 
